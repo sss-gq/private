@@ -1,0 +1,578 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>卷宗下载</title>
+  <link rel="stylesheet" type="text/css" href="css/element.css" />
+  <script src="./js/vue.js"></script>
+</head>
+<style>
+*{
+  margin:0;
+  padding:0;
+  box-sizing: border-box;
+}
+html,body{
+  width: 100%;
+  height: 100%;
+}
+#app{
+  height:100%;
+}
+.filedownload{
+  width:80%;
+  height:100%;
+  display: flex;
+  flex-direction:column;
+  background-color:rgb(251,248,251);
+  margin:0 auto;
+}
+.filedownload>div{
+  display: flex;
+  justify-content: center;
+}
+.filedownload_title{
+  height: 12%;
+  align-items: center;
+  font-size:24px;
+  font-weight: bold;
+  border-bottom:1px solid #E8E8E8;
+  }
+  .filedownload_step{
+    height:144px;
+    display:flex;
+    align-items: center;
+    flex-direction:column;
+  }
+  .step_shape{
+    width:70%;
+    display: flex;
+    align-items: center;
+  }
+  .step_circle_active{
+    width:12px;
+    height:12px;
+    background:rgba(24,144,255,1);
+    border:3px solid rgba(250,250,250,1);
+    box-shadow:0px 0px 10px rgba(0,0,0,0.16);
+    border-radius:50%;
+  }
+  .step_line_active{
+    width:calc(50% - 13.5px);
+    height:2px;
+    background:rgba(0,145,255,1);
+    border-radius:6px;
+  }
+  .step_circle{
+    width:12px;
+    height:12px;
+    background:rgba(191,191,191,1);
+    border:3px solid rgba(250,250,250,1);
+    border-radius:50%;
+  }
+  .step_line{
+    width:calc(50% - 13.5px);
+    height:2px;
+    background:rgba(192,196,204,1);
+    border-radius:6px;
+  }
+  .step_word_active{
+    font-size:16px;
+    font-weight:500;
+    line-height:22px;
+    color:rgba(0,145,255,1);
+  }
+  .step_word{
+    font-size:16px;
+    font-weight:400;
+    line-height:22px;
+    color:rgba(0,0,0,0.45);
+  }
+  .step_main{
+    width:calc(70% + 3rem);
+    display:flex;
+    justify-content: space-between;
+  }
+  .filedownload_main{
+    display: flex;
+    flex-direction:column;
+    align-items: center;
+  }
+  .secretkey_word{
+    width:112px;
+    font-size:14px;
+    line-height:20px;
+    color:rgba(91,97,103,1);
+  }
+  .el-input{
+    width:320px;
+    display: flex;
+    flex-direction:column;
+  }
+  .el-form-item { 
+    margin-bottom: 0px;
+  }
+  .main_qrcode{
+    width: 300px;
+    height: 300px;
+    background:rgba(255,255,255,1);
+    box-shadow:0px 0px 10px rgba(0,0,0,0.16);
+    position:relative;
+  }
+  .main_qrcode>img{
+    width:100%;
+    height:100%;
+  }
+  .main_qrcode .qrcodefailure{
+    width:100%;
+    height:100%;
+    position:absolute;
+    left:0;
+    top:0;
+    /* background-color:#fff; */
+    color:#fff;
+    background-color:rgba(0,0,0,0.8);
+    display:flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+  }
+  .main_qrcode .qrcodesuccess{
+    width:100%;
+    height:100%;
+    position:absolute;
+    left:0;
+    top:0;
+    background-color:#fff;
+    display:flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+  }
+  .main_qrcode .qrcodefailure>div,.main_qrcode .qrcodesuccess>div{
+    padding:3px 0px;
+  }
+  .main_qrcode .qrcodefailure img,.main_qrcode .qrcodesuccess img{
+    width: 50px;
+    height: 50px;
+  }
+  .main_word{
+    font-size:14px;
+    font-weight:400;
+    line-height:22px;
+    color:rgba(48,49,51,1);
+    margin:23px 0px;
+  }
+  .refresh{
+    font-size:12px;
+    font-weight:400;
+    line-height:22px;
+    color:rgba(0,145,255,1);
+    cursor:pointer;
+    display:flex;
+    align-items: center;
+    margin-top:14px;
+  }
+  .main_instructions{
+    font-size:12px;
+    font-weight:400;
+    line-height:22px;
+    color:rgba(0,145,255,1);
+    cursor:pointer;
+  }
+  .el-dialog{
+    min-width: 420px;
+    border-radius:10px;
+    margin:auto;
+  }
+  .el-dialog__headerbtn .el-dialog__close{
+    color:#fff;
+  }
+  .el-dialog__header{
+    background:rgba(72,129,255,1);
+    border-radius:10px 10px 0px 0px;
+  }
+  .el-dialog__title{
+    color:#fff;
+  }
+  .instructionsdialog{
+    border-bottom:1px dashed #C0C4CC;
+    line-height: 40px;
+    font-size: 14px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .instructionsdialogleft{
+    display: flex;
+    align-items: center;
+  }
+  .colorblue{
+    color:#0091FF
+  }
+  .font28{
+    font-size: 28px;
+  }
+  .paging{
+    display: flex;
+    justify-content: space-between;
+    margin:10px 0px 0px;
+  }
+  .downloadfile{
+    width: 448px;
+    margin:0 auto;
+  }
+  .downloadfile>div{
+    margin:8px 0px;
+  }
+  .downloadfilebutten{
+    width:120px;
+    height:40px;
+    background:rgba(64,158,255,1);
+    border-radius:4px;
+    line-height: 40px;
+    font-size:14px;
+    text-align:center;
+    color:#fff;
+    display: block;
+    text-decoration: none;
+    cursor: pointer;
+  }
+  .downloadfileinform{
+    font-size:12px;
+    line-height:20px;
+    color:rgba(96,98,102,1);
+    opacity:1;
+  }
+  .downloadfilecon{
+    width:448px;
+    background:rgba(242,246,252,1);
+    border:1px dashed rgba(160,183,235,1);
+    border-radius:5px;
+    padding:5px;
+  }
+  .downloadfilecon>img{
+    width: 14px;
+    height: 14px;
+  }
+  .downloadfilehint{
+    font-size:12px;
+    line-height:20px;
+    color:rgba(96,98,102,1);
+    opacity:1;
+  }
+  .mt80{
+    margin-top: 80px;
+  }
+  .colorred{
+    font-size:14px;
+    font-weight:400;
+    line-height:22px;
+    color:rgba(224,32,32,1);
+    opacity:1;
+  }
+  .cursor{
+    cursor: pointer;
+    text-decoration: none;
+  }
+  [v-cloak]{
+      display: none;
+  }
+</style>
+<body>
+<div id="app">
+  <div class="filedownload" v-cloak>
+    <div class="filedownload_title">卷宗下载</div>
+    <div class="filedownload_step" >
+      <div class="step_shape" >
+        <div :class="steps >= 1?step_circle_active:step_circle" @click="steps=1"  ></div>
+        <div :class="steps >= 2?step_line_active:step_line"  ></div>
+        <div :class="steps >= 2?step_circle_active:step_circle" @click="steps=2"  ></div>
+        <div :class="steps >= 3?step_line_active:step_line"  ></div>
+        <div :class="steps >= 3?step_circle_active:step_circle" @click="steps=3"  ></div>
+      </div>
+      <div class="step_main">
+        <div class="step_word_active" >扫码验证</div>
+        <div :class="steps >= 2?step_word_active:step_word"  >输入密钥</div>
+        <div :class="steps >= 3?step_word_active:step_word"  >完成下载</div>
+      </div>
+    </div>
+    <!-- 步骤一 -->
+    <div class="filedownload_main" v-if="steps ==1" >
+      <div class="main_qrcode">
+        <img :src="srcqrcode" />
+        <div class="qrcodefailure" v-show="qrcodefailureshow">
+          <div><img src="./img/gantanhao.png" /></div>
+          <div>二维码已失效</div>
+          <div>请刷新</div>
+        </div>
+        <div class="qrcodesuccess" v-show="scanOkVerifyshow">
+          <div><img src="./img/gantanhao.png" /></div>
+          <div>扫描成功</div>
+          <div>请勿刷新本页面，按手机提示操作</div>
+        </div>
+      </div>
+      <div class="refresh" @click="refresh()" >
+        <img src="./img/refresh.png" />&nbsp;&nbsp;刷新二维码
+      </div>
+      <div class="main_word">
+        请使用浙江检察APP扫一扫，身份核验后下载
+      </div>
+      <div class="main_instructions" @click="instructions()">如何使用</div>
+    </div>
+    <!-- 步骤一end -->
+    <!-- 步骤二 -->
+    <div class="filedownload_main" v-if="steps ==2" >
+      <el-form :model="ruleForm" status-icon :rules="rules" ref="ruleForm" label-width="130px" class="demo-ruleForm mt80"  @submit.native.prevent >
+        <el-form-item label="请输入下载秘钥：" prop="pass" >
+          <el-input type="password" v-model="ruleForm.pass" autocomplete="off"  show-password  @keyup.enter.native="secretKey()" maxlength="8"></el-input>
+          <span class="colorred">{{secretKeymessage}}&nbsp;</span>
+        </el-form-item>
+        <!-- <el-form-item>
+        </el-form-item> -->
+        <el-form-item>
+          <el-button type="primary"   @click="secretKey()">下一步</el-button>
+        </el-form-item>
+      </el-form>
+    </div>
+    <!-- 步骤二end -->
+    <!-- 步骤三 -->
+    <div class="filedownload_main" v-if="steps ==3" >
+      <div class="downloadfile mt80">
+        <div v-if="checked"><a :href="filedownloadpath + '&fileKey=' + secretKeydata.code + '&fileName=' + secretKeydata.casesName" :download="steps" class="downloadfilebutten" >下载卷宗</a></div>
+        <div class="downloadfilebutten" @click="downloadfile()" v-else>下载卷宗</div>
+        <div class="downloadfilecon" >
+          <img src="./img/fujian.png" />&nbsp;.zip
+        </div>
+        <div class="downloadfileinform" >
+          <el-checkbox v-model="checked" ></el-checkbox>&nbsp;&nbsp;告知协议的文字，浏览勾选后，上述卷宗才可下载
+        </div>
+        <div class="downloadfilehint" >提示：以上为{{secretKeydata.casesName}}的卷宗，点击下载后使用监察机关分配的密码浏览</div>
+      </div>
+    </div>
+    <!-- 步骤三end -->
+    <!-- 使用说明对话框 -->
+    <el-dialog
+      title="使用说明"
+      :visible.sync="instructionsdialog"
+      width="30%"
+      center
+      v-cloak>
+      <div v-if="queryHelpListvalue != '' && queryHelpListvalue !=  undefined ">
+        <div class="instructionsdialog" v-for="(v,i) in queryHelpListvalue">
+          <div class="instructionsdialogleft"><span class="colorblue font28">&nbsp;·&nbsp;</span>{{v.name}}</div>
+          <div>
+            <a :href="downHttp +'&fileCode=' + v.fileCode" :download="v.name" class="colorblue cursor" >下载</a>
+          </div>
+        </div>
+        <div class="paging">
+          <span>共{{total}}条</span>
+          <el-pagination
+            @size-change="handleSizeChange"
+            @current-change="handleCurrentChange"
+            :current-page.sync="currentPage1"
+            :page-size="4"
+            layout="prev, pager, next"
+            :total="total">
+          </el-pagination>
+        </div>
+      </div>
+      <div v-else>暂无数据</div>
+    </el-dialog>
+    <!-- 使用说明对话框end -->
+ </div>
+</div>
+<script src="./js/axios.min.js"></script> 
+<script src="./js/ajax.js"></script>
+<script src="./js/element.js"></script>
+<script src="./js/md5.js" type="text/javascript" charset="utf-8"></script>
+<script> 
+    new Vue({
+        el: '#app',
+        data: function () {
+            return {
+              steps:1,  //步骤
+              step_line_active:"step_line_active",
+              step_circle_active:"step_circle_active",
+              step_circle:"step_circle",
+              step_line:"step_line",
+              step_word_active:"step_word_active",
+              step_word:"step_word",
+              ruleForm: {  //密钥
+                pass: '',
+              },
+              rules: {
+              },
+              instructionsdialog:false,  //使用对话框
+              currentPage1: 1,
+              pageSize:4,
+              pageStart:1,
+              total:0,
+              srcqrcode:api.host+"cases/qrCode/generateQrCode" + getkeyFun({}),  //二维码地址
+              queryHelpListvalue:'',  //帮助列表材料
+              checked:false, 
+              secretKeydata:'',  //卷宗返回信息
+              secretKeymessage:'',  //密钥返回信息
+              downHttp:api.host+"common/helpMaterials/queryUrlByFileCode"+getkeyFun({}),  //使用帮助材料下载
+              qrcodefailuretime:0,//二维码失效时间
+              qrcodefailureshow:false,
+              scanOkVerifytime:0,//是否扫码吗时间
+              scanOkVerifyshow:false,
+              filedownloadpath:api.host+"innerfile/intranetOss/downLoad"+getkeyFun({})
+            }
+        },
+        created(){
+          this.scanOkVerify();
+        },
+        mounted: function () {
+        },
+        beforeDestroy() {
+          clearTimeout(this.authenticationOkVerifytimer);
+          this.authenticationOkVerifytimer = null;
+          clearTimeout(this.scanOkVerifytimer);
+          this.scanOkVerifytimer = null;
+    		},
+        methods: {
+          //UUID
+          generateUUID:function(){
+            var d = new Date().getTime();
+            console.log("1",d)
+            if (window.performance && typeof window.performance.now === "function") {
+                d += performance.now(); //use high-precision timer if available
+            console.log("2",d)
+            }
+            var uuid = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
+                var r = (d + Math.random() * 16) % 16 | 0;
+            console.log("3",r)
+                d = Math.floor(d / 16);
+            console.log("4",d)
+                return (c == 'x' ? r : (r & 0x3 | 0x8)).toString(16);
+            });
+            return uuid;
+          },
+          //刷新
+          refresh:function(){
+            this.expired()//重新获取二维码
+            window.location.reload(true);
+          }, 
+          //二维码过期
+          expired:function(){
+            ajax(api.host,"cases/qrCode/expired"+ getkeyFun({})+'&accessToken=' + getCookie("accessToken"),{},"get", this, this.expiredBack);
+          },
+          expiredBack:function(data){
+          },
+          //是否被扫码
+          scanOkVerify:function (){
+            ajax(api.host,"cases/qrCode/scanOkVerify"+ getkeyFun({})+'&accessToken=' + getCookie("accessToken"),{},"get", this, this.scanOkVerifyBack);
+          },
+          scanOkVerifyBack:function(data){
+            if(data.success == false && this.scanOkVerifytime <50){
+            //只计时两分半后显示二维码失效
+              clearTimeout(this.scanOkVerifytimer)
+              scanOkVerifytimer = setTimeout(() => {
+                    this.scanOkVerifytime++
+                    console.log("是否扫码",this.scanOkVerifytime)
+                      this.scanOkVerify()
+                  }, 3000)
+              }else if(data.success == true){
+                // 展示二维码扫描成功
+                // 清除上方计时器
+                // 调用验证接口
+                clearTimeout(this.scanOkVerifytimer)    // 取消定时器
+                this.scanOkVerifyshow=true
+                this.authenticationOkVerify()
+              }else{
+                clearTimeout(this.scanOkVerifytimer)    // 取消定时器
+                this.qrcodefailureshow=true //二维码失效
+                this.expired()//重新获取二维码
+              }
+          },
+          //核验是否登录成功
+          authenticationOkVerify:function (){
+            ajax(api.host,"cases/qrCode/authenticationOkVerify"+ getkeyFun({})+'&accessToken=' + getCookie("accessToken"),{},"get", this, this.authenticationOkVerifyBack);
+          },
+          authenticationOkVerifyBack:function (data){
+              clearTimeout(this.authenticationOkVerifytimer)
+              if (data.success == false && this.qrcodefailuretime <50) {
+                  authenticationOkVerifytimer = setTimeout(() => {
+                    this.qrcodefailuretime++
+                    console.log("是否核验成功",this.qrcodefailuretime)
+                    this.authenticationOkVerify()
+                  }, 3000)
+                } else {
+                  clearTimeout(this.authenticationOkVerifytimer)    // 取消定时器
+                  if(data.success == true){
+                    this.$message({
+                      message: '身份核验成功！',
+                      type: 'success'
+                    });
+                    this.steps=2
+                  }else{
+                    this.scanOkVerifyshow=false//扫码成功页面取消
+                    this.qrcodefailureshow=true //二维码失效
+                    this.expired()//重新获取二维码
+                  }
+                }
+          },
+          // 使用说明
+          instructions:function (){
+            this.instructionsdialog = true
+            this.queryHelpList()
+          },
+          // 帮助材料列表
+          queryHelpList:function (){
+            var data={
+              pageSize:this.pageSize,
+              pageStart:this.pageStart
+            	}
+            ajax(api.host,"common/helpMaterials/queryHelpList" + getkeyFun(data),data,"post", this, this.queryHelpListBack);
+          },
+          queryHelpListBack:function (data){
+            this.queryHelpListvalue=data.list
+            this.total=data.total
+          },
+          //根据密钥获取卷宗
+          secretKey:function (){
+            var data={
+              "secretKey":this.ruleForm.pass
+            	}
+            ajax(api.host,"cases/onlineMarking/secretKey"+getkeyFun(data),data,"post", this, this.secretKeyBack);
+          },
+          secretKeyBack:function (data){
+            if(data.success == false){
+              switch(data.message){ 
+                case "密钥错误":
+                this.secretKeymessage="密钥不正确，请输入正确密钥"
+                break;
+                case "密钥不能为空":
+                this.secretKeymessage=data.message
+                break;
+                case "密钥已过期":
+                this.secretKeymessage=data.message
+                break;
+                default:
+                  this.$message.error(data.message);
+              }
+            }else{
+              this.secretKeydata=data.data
+              this.steps=3
+            }
+          },
+          handleSizeChange(val) {
+            console.log(`每页 ${val} 条`);
+          },
+          handleCurrentChange(val) {
+            this.pageStart=val
+            this.queryHelpList()
+          },
+          downloadfile:function(){
+
+          }
+        }
+
+    })
+</script>
+</body>
+</html>
