@@ -341,7 +341,7 @@ html,body{
     <!-- 步骤三 -->
     <div class="filedownload_main" v-if="steps ==3" >
       <div class="downloadfile mt80">
-        <div v-if="checked"><a :href="filedownloadpath + '&fileKey=' + secretKeydata.code + '&fileName=' + secretKeydata.casesName" :download="steps" class="downloadfilebutten" >下载卷宗</a></div>
+        <div v-if="checked"><a href="http://192.168.3.163:9186/intranetOss/downLoad?fileKey=ceshi/1585704067055%E5%8F%91%E7%A5%A8.pdf&fileName=1585704067055%E5%8F%91%E7%A5%A8.pdf" :download="steps" class="downloadfilebutten" >下载卷宗</a></div>
         <div class="downloadfilebutten" @click="downloadfile()" v-else>下载卷宗</div>
         <div class="downloadfilecon" >
           <img src="./img/fujian.png" />&nbsp;.zip
@@ -420,7 +420,7 @@ html,body{
               qrcodefailureshow:false,
               scanOkVerifytime:0,//是否扫码吗时间
               scanOkVerifyshow:false,
-              filedownloadpath:api.host+"innerfile/intranetOss/downLoad"+getkeyFun({})
+              filedownloadpath:api.host+"/intranetOss/downLoad"+getkeyFun({})
             }
         },
         created(){
@@ -438,16 +438,12 @@ html,body{
           //UUID
           generateUUID:function(){
             var d = new Date().getTime();
-            console.log("1",d)
             if (window.performance && typeof window.performance.now === "function") {
                 d += performance.now(); //use high-precision timer if available
-            console.log("2",d)
             }
             var uuid = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
                 var r = (d + Math.random() * 16) % 16 | 0;
-            console.log("3",r)
                 d = Math.floor(d / 16);
-            console.log("4",d)
                 return (c == 'x' ? r : (r & 0x3 | 0x8)).toString(16);
             });
             return uuid;
