@@ -277,6 +277,19 @@ html,body{
     cursor: pointer;
     text-decoration: none;
   }
+  /* .el-tree-node__label{
+    padding-left:23px;
+    background:url(./img/success.png) no-repeat;
+    background-size:20px 20px;
+  } */
+  .custom-tree-node {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-size: 14px;
+    padding-right: 8px;
+  }
   [v-cloak]{
       display: none;
   }
@@ -309,7 +322,7 @@ html,body{
           <div>请刷新</div>
         </div>
         <div class="qrcodesuccess" v-show="scanOkVerifyshow">
-          <div><img src="./img/gantanhao.png" /></div>
+          <div><img src="./img/success.png" /></div>
           <div>扫描成功</div>
           <div>请勿刷新本页面，按手机提示操作</div>
         </div>
@@ -341,10 +354,23 @@ html,body{
     <!-- 步骤三 -->
     <div class="filedownload_main" v-if="steps ==3" >
       <div class="downloadfile mt80">
-        <div v-if="checked"><a href="http://192.168.3.163:9186/intranetOss/downLoad?fileKey=ceshi/1585704067055%E5%8F%91%E7%A5%A8.pdf&fileName=1585704067055%E5%8F%91%E7%A5%A8.pdf" :download="steps" class="downloadfilebutten" >下载卷宗</a></div>
-        <div class="downloadfilebutten" @click="downloadfile()" v-else>下载卷宗</div>
+        <!-- <div v-if="checked"><a href="http://192.168.3.163:9186/intranetOss/downLoad?fileKey=ceshi/1585704067055%E5%8F%91%E7%A5%A8.pdf&fileName=1585704067055%E5%8F%91%E7%A5%A8.pdf" :download="steps" class="downloadfilebutten" >下载卷宗</a></div>
+        <div class="downloadfilebutten" @click="downloadfile()" v-else>下载卷宗</div> -->
         <div class="downloadfilecon" >
-          <img src="./img/fujian.png" />&nbsp;.zip
+          <!-- <img src="./img/fujian.png" />&nbsp;.zip -->
+          <el-tree
+            :data="data"
+            :props="defaultProps"
+            accordion
+            @node-click="handleNodeClick"
+            >
+            <span class="custom-tree-node" slot-scope="{ node, data }">
+              <span>{{node.label}}&nbsp;<span v-if="data.isFolder == false">({{data.totalSize}})</span></span>
+              <span v-if="data.isFolder == false">
+                <a :href="filedownloadpath + data.ossKey + '&fileName=' + data.filename" :download="data.filename"  class="colorblue cursor" >下载卷宗</a>
+              </span>
+            </span>
+          </el-tree>
         </div>
         <div class="downloadfileinform" >
           <el-checkbox v-model="checked" ></el-checkbox>&nbsp;&nbsp;告知协议的文字，浏览勾选后，上述卷宗才可下载
@@ -393,7 +419,7 @@ html,body{
         el: '#app',
         data: function () {
             return {
-              steps:1,  //步骤
+              steps:3,  //步骤
               step_line_active:"step_line_active",
               step_circle_active:"step_circle_active",
               step_circle:"step_circle",
@@ -420,11 +446,156 @@ html,body{
               qrcodefailureshow:false,
               scanOkVerifytime:0,//是否扫码吗时间
               scanOkVerifyshow:false,
-              filedownloadpath:api.host+"/intranetOss/downLoad"+getkeyFun({})
+              filedownloadpath:api.host+"download/intranetOss/downLoad"+getkeyFun({}) +'&fileKey=',
+              iconclass:'./img/fujian.png',
+              data: [
+                // {
+                //   label: '一级 1',
+                //   isFolder:true,
+                //   children: [
+                //     {
+                //       label: '二级 1-1',
+                //       isFolder:true,
+                //       children: [
+                //         {
+                //           label: '三级 1-1-1',
+                //           isFolder:false,
+                //           filename:'1585704067055%E5%8F%91%E7%A5%A8.pdf',
+                //           ossKey:'ceshi/1585704067055%E5%8F%91%E7%A5%A8.pdf'
+                //         }
+                //       ]
+                //     },
+                //     {
+                //       label: '二级 1-1',
+                //       isFolder:false,
+                //       filename:'1585704067055%E5%8F%91%E7%A5%A8.pdf',
+                //       ossKey:'ceshi/1585704067055%E5%8F%91%E7%A5%A8.pdf'
+                //     },
+                //     {
+                //       label: '二级 1-1',
+                //       isFolder:true,
+                //       children: [
+                //         {
+                //           label: '三级 1-1-1',
+                //           isFolder:false,
+                //           filename:'1585704067055%E5%8F%91%E7%A5%A8.pdf',
+                //           ossKey:'ceshi/1585704067055%E5%8F%91%E7%A5%A8.pdf'
+                //         }
+                //       ]
+                //     },
+                //   ]
+                // }
+              ],
+              defaultProps: {
+                children: 'children',
+                label: 'label',
+                isFolder:'isFolder',
+                filename:'filename',
+                ossKey:'ossKey',
+                totalSize:'totalSize'
+              },
+              list:[
+                {
+                  code:"4371883556822680660",
+                  fileInfoList:[
+                    {
+                      code:"4371883556822680660",
+                      filename:"发票2.pdf",
+                      identifier:"37079-2pdf",
+                      isFolder:1,
+                      ossKey:"ceshi/1585725192323发票2.pdf",
+                      relativePath:"发票文档/好失/发票2.pdf",
+                      totalSize:37079,
+                      type:"application/pdf"
+                    },{
+                      code:"4371883556822680660",
+                      filename:"发票2.pdf",
+                      identifier:"37079-2pdf",
+                      isFolder:1,
+                      ossKey:"ceshi/1585725192323发票2.pdf",
+                      relativePath:"发票文档/好失/发票/sss/sfs/sff2.pdf",
+                      totalSize:37079,
+                      type:"application/pdf"
+                    },{
+                      code:"4371883556822680660",
+                      filename:"发票2.pdf",
+                      identifier:"37079-2pdf",
+                      isFolder:1,
+                      ossKey:"ceshi/1585725192323发票2.pdf",
+                      relativePath:"发票文档/好失/发票2.pdf",
+                      totalSize:37079,
+                      type:"application/pdf"
+                    }, {
+                      code:"4371883556822680660",
+                      filename:"发票2.pdf",
+                      identifier:"37079-2pdf",
+                      isFolder:1,
+                      ossKey:"ceshi/1585725192323发票2.pdf",
+                      relativePath:"发票文档/好失/san/发票2.pdf",
+                      totalSize:37079,
+                      type:"application/pdf"
+                    }, {
+                      code:"4371883556822680660",
+                      filename:"发票2.pdf",
+                      identifier:"37079-2pdf",
+                      isFolder:1,
+                      ossKey:"ceshi/1585725192323发票2.pdf",
+                      relativePath:"发票文档/好失/san/dfsfa/发票2.pdf",
+                      totalSize:37079,
+                      type:"application/pdf"
+                    },
+                  ],
+                  fileTotalSize:49235343,
+                  folderName:"发票文档",
+                  isFolder:true
+                },
+                {
+                  code:"4371883556822680660",
+                  fileInfoList:[
+                    {
+                      code:"4371883556822680660",
+                      filename:"发票2.pdf",
+                      identifier:"37079-2pdf",
+                      isFolder:1,
+                      ossKey:"ceshi/1585725192323发票2.pdf",
+                      relativePath:"一二三/好失/发票3.pdf",
+                      totalSize:37079,
+                      type:"application/pdf"
+                    },
+                    
+                  ],
+                  fileTotalSize:49235343,
+                  folderName:"一二三",
+                  isFolder:true
+                },
+                {
+                  code:"4371883556822680660",
+                  fileInfoList:[
+                      {
+                        code:"4371883556822680660",
+                        filename:"testimg.zip",
+                        identifier:"47833417-testimgzip",
+                        isFolder:0,
+                        ossKey:"ceshi/1585726868586testimg.zip",
+                        relativePath:"testimg.zip",
+                        totalSize:47833417,
+                        type:"application/x-zip-compressed"
+                      }
+                  ],
+                  fileTotalSize:47833417,
+                  folderName:"testimg.zip",
+                  isFolder:false
+                }
+              ]
             }
         },
         created(){
-          this.scanOkVerify();
+          // this.scanOkVerify();
+          this.traverse()
+          
+          // this.list.map( (item,i) =>{
+          //   this.recursion(this.data,item.fileInfoList)
+          // })
         },
         mounted: function () {
         },
@@ -435,6 +606,41 @@ html,body{
           this.scanOkVerifytimer = null;
     		},
         methods: {
+         
+          //遍历下载列表
+          traverse:function(){
+            this.list.map( (item,i) =>{
+              
+              if(item.isFolder){
+                this.data.push({"label":item.folderName,"children":[],"isFolder":true})
+
+                item.fileInfoList.map((citem,ci) =>{
+                  console.log("totalSize",citem.totalSize)
+                  if(citem.totalSize <= 1048576){
+                    var mb=(citem.totalSize/1024).toFixed(2)+"M"
+                  }else{
+                    var mb=(citem.totalSize/1048576).toFixed(2)+"G"
+                  }
+                  console.log("mb",mb)
+                      this.data[i].children.push({"label":citem.filename,"isFolder":false,"oss":item.fileInfoList.ossKey,"filename":item.fileInfoList.filename,"totalSize":mb})
+                    
+                })
+             }else{
+              console.log("totalSize",item.fileInfoList[0].totalSize)
+                  if(item.fileInfoList[0].totalSize <= 1048576){
+                    var mb=(item.fileInfoList[0].totalSize/1024).toFixed(2)+"M"
+                  }else{
+                    var mb=(item.fileInfoList[0].totalSize/1048576).toFixed(2)+"G"
+                  }
+                  console.log("mb",mb)
+                this.data.push({"label":item.folderName,"isFolder":false,"oss":item.fileInfoList.ossKey,"filename":item.fileInfoList.filename,"totalSize":mb})
+              }
+            })
+          },
+         
+          handleNodeClick(data) {
+            // console.log(data);
+          },
           //UUID
           generateUUID:function(){
             var d = new Date().getTime();
@@ -553,8 +759,19 @@ html,body{
               }
             }else{
               this.secretKeydata=data.data
+              queryFileInfoList(data.data.code)
               this.steps=3
             }
+          },
+          //查询上传文件列表
+          queryFileInfoList:function (code){
+            var data={
+              code:code
+            }
+            ajax(api.host,"intranetOss/queryFileInfoList"+ getkeyFun(data),data,"post", this, this.queryFileInfoListBack);
+          },
+          queryFileInfoListBack:function (data){
+            this.list=data.list
           },
           handleSizeChange(val) {
             console.log(`每页 ${val} 条`);
