@@ -6,7 +6,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>卷宗下载</title>
   <link rel="stylesheet" type="text/css" href="css/element.css" />
-  <script src="./js/vue.js"></script>
 </head>
 <style>
 *{
@@ -221,7 +220,7 @@ html,body{
     margin:10px 0px 0px;
   }
   .downloadfile{
-    width: 448px;
+    min-width: 448px;
     margin:0 auto;
   }
   .downloadfile>div{
@@ -247,11 +246,14 @@ html,body{
     opacity:1;
   }
   .downloadfilecon{
-    width:448px;
-    background:rgba(242,246,252,1);
+    /* background:rgba(242,246,252,1); */
+    background-color:#fff;
     border:1px dashed rgba(160,183,235,1);
     border-radius:5px;
     padding:5px;
+  }
+  .downloadfilecon .el-tree{
+    /* min-width:448px; */
   }
   .downloadfilecon>img{
     width: 14px;
@@ -277,11 +279,10 @@ html,body{
     cursor: pointer;
     text-decoration: none;
   }
-  /* .el-tree-node__label{
-    padding-left:23px;
-    background:url(./img/success.png) no-repeat;
-    background-size:20px 20px;
-  } */
+  .fileicon{
+    widows: 20px;
+    height: 20px;
+  }
   .custom-tree-node {
     flex: 1;
     display: flex;
@@ -289,6 +290,13 @@ html,body{
     justify-content: space-between;
     font-size: 14px;
     padding-right: 8px;
+  }
+  .custom-tree-node>div{
+    display: flex;
+    align-items: center;
+  }
+  .el-checkbox__inner{
+    border:1px solid #999;
   }
   [v-cloak]{
       display: none;
@@ -300,11 +308,11 @@ html,body{
     <div class="filedownload_title">卷宗下载</div>
     <div class="filedownload_step" >
       <div class="step_shape" >
-        <div :class="steps >= 1?step_circle_active:step_circle" @click="steps=1"  ></div>
+        <div :class="steps >= 1?step_circle_active:step_circle" ></div>
         <div :class="steps >= 2?step_line_active:step_line"  ></div>
-        <div :class="steps >= 2?step_circle_active:step_circle" @click="steps=2"  ></div>
+        <div :class="steps >= 2?step_circle_active:step_circle" ></div>
         <div :class="steps >= 3?step_line_active:step_line"  ></div>
-        <div :class="steps >= 3?step_circle_active:step_circle" @click="steps=3"  ></div>
+        <div :class="steps >= 3?step_circle_active:step_circle" ></div>
       </div>
       <div class="step_main">
         <div class="step_word_active" >扫码验证</div>
@@ -357,7 +365,6 @@ html,body{
         <!-- <div v-if="checked"><a href="http://192.168.3.163:9186/intranetOss/downLoad?fileKey=ceshi/1585704067055%E5%8F%91%E7%A5%A8.pdf&fileName=1585704067055%E5%8F%91%E7%A5%A8.pdf" :download="steps" class="downloadfilebutten" >下载卷宗</a></div>
         <div class="downloadfilebutten" @click="downloadfile()" v-else>下载卷宗</div> -->
         <div class="downloadfilecon" >
-          <!-- <img src="./img/fujian.png" />&nbsp;.zip -->
           <el-tree
             :data="data"
             :props="defaultProps"
@@ -365,10 +372,12 @@ html,body{
             @node-click="handleNodeClick"
             >
             <span class="custom-tree-node" slot-scope="{ node, data }">
-              <span>{{node.label}}&nbsp;<span v-if="data.isFolder == false">({{data.totalSize}})</span></span>
-              <span v-if="data.isFolder == false">
-                <a :href="filedownloadpath + data.ossKey + '&fileName=' + data.filename" :download="data.filename"  class="colorblue cursor" >下载卷宗</a>
-              </span>
+              <div><img src=" " class="fileicon" v-if="data.isFolder == true"/>&nbsp;{{node.label}}&nbsp;<div v-if="data.isFolder == false">({{data.totalSize}})</div>&nbsp;&nbsp;</div>
+              <div v-if="data.isFolder == false">
+                <a v-if="checked" :href="filedownloadpath +'?secretKey='+ ruleForm.pass+'&fileCode='+data.fileCode" :download="data.filename"  class="colorblue cursor" >下载</a>
+                <!--HQah7ovi <a v-if="checked" :href="filedownloadpath + data.fileCode + '&fileName=' + data.filename" :download="data.filename"  class="colorblue cursor" >下载</a> -->
+                <div v-else class="colorblue cursor">下载</div>
+              </div>
             </span>
           </el-tree>
         </div>
@@ -410,6 +419,7 @@ html,body{
     <!-- 使用说明对话框end -->
  </div>
 </div>
+<script src="./js/vue.js"></script>
 <script src="./js/axios.min.js"></script> 
 <script src="./js/ajax.js"></script>
 <script src="./js/element.js"></script>
@@ -419,7 +429,7 @@ html,body{
         el: '#app',
         data: function () {
             return {
-              steps:3,  //步骤
+              steps:1,  //步骤
               step_line_active:"step_line_active",
               step_circle_active:"step_circle_active",
               step_circle:"step_circle",
@@ -446,156 +456,24 @@ html,body{
               qrcodefailureshow:false,
               scanOkVerifytime:0,//是否扫码吗时间
               scanOkVerifyshow:false,
-              filedownloadpath:api.host+"download/intranetOss/downLoad"+getkeyFun({}) +'&fileKey=',
-              iconclass:'./img/fujian.png',
-              data: [
-                // {
-                //   label: '一级 1',
-                //   isFolder:true,
-                //   children: [
-                //     {
-                //       label: '二级 1-1',
-                //       isFolder:true,
-                //       children: [
-                //         {
-                //           label: '三级 1-1-1',
-                //           isFolder:false,
-                //           filename:'1585704067055%E5%8F%91%E7%A5%A8.pdf',
-                //           ossKey:'ceshi/1585704067055%E5%8F%91%E7%A5%A8.pdf'
-                //         }
-                //       ]
-                //     },
-                //     {
-                //       label: '二级 1-1',
-                //       isFolder:false,
-                //       filename:'1585704067055%E5%8F%91%E7%A5%A8.pdf',
-                //       ossKey:'ceshi/1585704067055%E5%8F%91%E7%A5%A8.pdf'
-                //     },
-                //     {
-                //       label: '二级 1-1',
-                //       isFolder:true,
-                //       children: [
-                //         {
-                //           label: '三级 1-1-1',
-                //           isFolder:false,
-                //           filename:'1585704067055%E5%8F%91%E7%A5%A8.pdf',
-                //           ossKey:'ceshi/1585704067055%E5%8F%91%E7%A5%A8.pdf'
-                //         }
-                //       ]
-                //     },
-                //   ]
-                // }
-              ],
+              // filedownloadpath:api.host+"download/intranetOss/downLoad"+getkeyFun({}) +'&fileKey=',
+              filedownloadpath:'http://file.dev.totalapp.cn:8880/download/intranetOss/downLoad',//卷宗下载地址
+              data: [],
               defaultProps: {
                 children: 'children',
                 label: 'label',
                 isFolder:'isFolder',
                 filename:'filename',
-                ossKey:'ossKey',
+                fileCode:'fileCode',
                 totalSize:'totalSize'
               },
-              list:[
-                {
-                  code:"4371883556822680660",
-                  fileInfoList:[
-                    {
-                      code:"4371883556822680660",
-                      filename:"发票2.pdf",
-                      identifier:"37079-2pdf",
-                      isFolder:1,
-                      ossKey:"ceshi/1585725192323发票2.pdf",
-                      relativePath:"发票文档/好失/发票2.pdf",
-                      totalSize:37079,
-                      type:"application/pdf"
-                    },{
-                      code:"4371883556822680660",
-                      filename:"发票2.pdf",
-                      identifier:"37079-2pdf",
-                      isFolder:1,
-                      ossKey:"ceshi/1585725192323发票2.pdf",
-                      relativePath:"发票文档/好失/发票/sss/sfs/sff2.pdf",
-                      totalSize:37079,
-                      type:"application/pdf"
-                    },{
-                      code:"4371883556822680660",
-                      filename:"发票2.pdf",
-                      identifier:"37079-2pdf",
-                      isFolder:1,
-                      ossKey:"ceshi/1585725192323发票2.pdf",
-                      relativePath:"发票文档/好失/发票2.pdf",
-                      totalSize:37079,
-                      type:"application/pdf"
-                    }, {
-                      code:"4371883556822680660",
-                      filename:"发票2.pdf",
-                      identifier:"37079-2pdf",
-                      isFolder:1,
-                      ossKey:"ceshi/1585725192323发票2.pdf",
-                      relativePath:"发票文档/好失/san/发票2.pdf",
-                      totalSize:37079,
-                      type:"application/pdf"
-                    }, {
-                      code:"4371883556822680660",
-                      filename:"发票2.pdf",
-                      identifier:"37079-2pdf",
-                      isFolder:1,
-                      ossKey:"ceshi/1585725192323发票2.pdf",
-                      relativePath:"发票文档/好失/san/dfsfa/发票2.pdf",
-                      totalSize:37079,
-                      type:"application/pdf"
-                    },
-                  ],
-                  fileTotalSize:49235343,
-                  folderName:"发票文档",
-                  isFolder:true
-                },
-                {
-                  code:"4371883556822680660",
-                  fileInfoList:[
-                    {
-                      code:"4371883556822680660",
-                      filename:"发票2.pdf",
-                      identifier:"37079-2pdf",
-                      isFolder:1,
-                      ossKey:"ceshi/1585725192323发票2.pdf",
-                      relativePath:"一二三/好失/发票3.pdf",
-                      totalSize:37079,
-                      type:"application/pdf"
-                    },
-                    
-                  ],
-                  fileTotalSize:49235343,
-                  folderName:"一二三",
-                  isFolder:true
-                },
-                {
-                  code:"4371883556822680660",
-                  fileInfoList:[
-                      {
-                        code:"4371883556822680660",
-                        filename:"testimg.zip",
-                        identifier:"47833417-testimgzip",
-                        isFolder:0,
-                        ossKey:"ceshi/1585726868586testimg.zip",
-                        relativePath:"testimg.zip",
-                        totalSize:47833417,
-                        type:"application/x-zip-compressed"
-                      }
-                  ],
-                  fileTotalSize:47833417,
-                  folderName:"testimg.zip",
-                  isFolder:false
-                }
-              ]
+              list:[]
             }
         },
         created(){
-          // this.scanOkVerify();
-          this.traverse()
-          
-          // this.list.map( (item,i) =>{
-          //   this.recursion(this.data,item.fileInfoList)
-          // })
+          this.expired()//重新获取二维码
+          // window.location.reload(true);
+          this.scanOkVerify();//判断是否扫码
         },
         mounted: function () {
         },
@@ -606,40 +484,30 @@ html,body{
           this.scanOkVerifytimer = null;
     		},
         methods: {
-         
           //遍历下载列表
           traverse:function(){
             this.list.map( (item,i) =>{
-              
               if(item.isFolder){
-                this.data.push({"label":item.folderName,"children":[],"isFolder":true})
-
+                // this.data.push({"label":item.folderName,"children":[],"isFolder":true})
                 item.fileInfoList.map((citem,ci) =>{
-                  console.log("totalSize",citem.totalSize)
                   if(citem.totalSize <= 1048576){
                     var mb=(citem.totalSize/1024).toFixed(2)+"M"
                   }else{
                     var mb=(citem.totalSize/1048576).toFixed(2)+"G"
                   }
-                  console.log("mb",mb)
-                      this.data[i].children.push({"label":citem.filename,"isFolder":false,"oss":item.fileInfoList.ossKey,"filename":item.fileInfoList.filename,"totalSize":mb})
-                    
+                  this.data.push({"label":citem.filename,"isFolder":false,"fileCode":item.fileInfoList[ci].fileCode,"filename":item.fileInfoList[ci].filename,"totalSize":mb})
                 })
              }else{
-              console.log("totalSize",item.fileInfoList[0].totalSize)
-                  if(item.fileInfoList[0].totalSize <= 1048576){
-                    var mb=(item.fileInfoList[0].totalSize/1024).toFixed(2)+"M"
-                  }else{
-                    var mb=(item.fileInfoList[0].totalSize/1048576).toFixed(2)+"G"
-                  }
-                  console.log("mb",mb)
-                this.data.push({"label":item.folderName,"isFolder":false,"oss":item.fileInfoList.ossKey,"filename":item.fileInfoList.filename,"totalSize":mb})
+                if(item.fileInfoList[0].totalSize <= 1048576){
+                  var mb=(item.fileInfoList[0].totalSize/1024).toFixed(2)+"M"
+                }else{
+                  var mb=(item.fileInfoList[0].totalSize/1048576).toFixed(2)+"G"
+                }
+                this.data.push({"label":item.folderName,"isFolder":false,"fileCode":item.fileInfoList[0].fileCode,"filename":item.fileInfoList[0].filename,"totalSize":mb})
               }
             })
           },
-         
           handleNodeClick(data) {
-            // console.log(data);
           },
           //UUID
           generateUUID:function(){
@@ -675,9 +543,8 @@ html,body{
               clearTimeout(this.scanOkVerifytimer)
               scanOkVerifytimer = setTimeout(() => {
                     this.scanOkVerifytime++
-                    console.log("是否扫码",this.scanOkVerifytime)
                       this.scanOkVerify()
-                  }, 3000)
+                  }, 1000)
               }else if(data.success == true){
                 // 展示二维码扫描成功
                 // 清除上方计时器
@@ -700,9 +567,8 @@ html,body{
               if (data.success == false && this.qrcodefailuretime <50) {
                   authenticationOkVerifytimer = setTimeout(() => {
                     this.qrcodefailuretime++
-                    console.log("是否核验成功",this.qrcodefailuretime)
                     this.authenticationOkVerify()
-                  }, 3000)
+                  }, 1000)
                 } else {
                   clearTimeout(this.authenticationOkVerifytimer)    // 取消定时器
                   if(data.success == true){
@@ -759,7 +625,7 @@ html,body{
               }
             }else{
               this.secretKeydata=data.data
-              queryFileInfoList(data.data.code)
+              this.queryFileInfoList(data.data.code)
               this.steps=3
             }
           },
@@ -768,13 +634,13 @@ html,body{
             var data={
               code:code
             }
-            ajax(api.host,"intranetOss/queryFileInfoList"+ getkeyFun(data),data,"post", this, this.queryFileInfoListBack);
+            ajax(api.host,"innerfile/intranetOss/queryFileInfoList"+ getkeyFun(data),data,"post", this, this.queryFileInfoListBack);
           },
           queryFileInfoListBack:function (data){
             this.list=data.list
+            this.traverse()
           },
           handleSizeChange(val) {
-            console.log(`每页 ${val} 条`);
           },
           handleCurrentChange(val) {
             this.pageStart=val

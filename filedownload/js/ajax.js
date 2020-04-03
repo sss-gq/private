@@ -6,7 +6,8 @@ var api = {
     
     //host: "http://192.168.3.101:8091/api/",//测试	
    	// host:"http://192.168.4.95:9092/",//测试	  
-   	host:"http://api.dev.totalapp.cn:8880/api/",//测试	  
+    //  host:"http://api.dev.totalapp.cn:8880/api/",//测试	
+     host:"http://pcapi.dev.totalapp.cn:8880/pcapi/api/",
    	// host:"http://api.dev.totalapp.cn:8880/api/",//测试	
     pagelink:'http://static.dev.totalapp.cn:8880/jwlaws/',//app内嵌地址/测试地址
     appkey:"6KScA4O5jLDlpWo7kpT3",//测试
@@ -28,6 +29,7 @@ var api = {
     //host:"http://192.168.3.11:9091/",//袁峰
     //host:"http://192.168.3.10:9099/",//李玉鹏
     //host:"http://192.168.3.4:9099/",//王明明
+    hostqinbin:"http://192.168.4.12:9092/",//覃斌
     
     //apikey:"?appKey=DYOOorwERPXCu1m5QkQd&timestamp="+gettimes+"&sign=1111111111&nonce="+gettimes,//key
     //apikey:"?appKey=6KScA4O5jLDlpWo7kpT3&timestamp="+gettimes+"&sign=1111111111&nonce="+gettimes,//key
